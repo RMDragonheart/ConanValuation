@@ -5,7 +5,10 @@
  */
 package com.dragonheart;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -13,8 +16,7 @@ import java.util.HashMap;
  */
 public class Simulation {
 
-    private static final int NUBMER_OF_ITERATION = 10_000_000;
-    private static final int NUMBER_OF_DICES = 1;
+    private static final int NUMBER_OF_DICES = 2;
     private static final boolean REROLL_BLANK = false;
     private static final boolean GREEDY_REROLL = false;
     private static final boolean ROLL_YELLOW = true;
@@ -23,62 +25,44 @@ public class Simulation {
 
     public static void main(String[] args) {
         HashMap<Integer, Integer> rollsValues = new HashMap<>();
-        Dice dice = new Dice();
-        int value;
-        int tmp;
+        Valuator dice = new Valuator();
 
         if (ROLL_YELLOW) {
-            // Simulation for Yellow Dices
-            for (int i = 0; i < NUBMER_OF_ITERATION; i++) {
-                value = dice.rollYellowDices(NUMBER_OF_DICES, REROLL_BLANK, GREEDY_REROLL);
-                if (rollsValues.containsKey(value)) {
-                    tmp = rollsValues.get(value);
-                    tmp++;
-                    rollsValues.put(value, tmp);
-                } else {
-                    rollsValues.put(value, 1);
-                }
+            try {
+                // Simulation for Yellow Dices
+                rollsValues = dice.diceRollSimulation("yellow", NUMBER_OF_DICES, REROLL_BLANK, GREEDY_REROLL);
+                printScoreFromMap("YELLOW", rollsValues);
+            } catch (Exception ex) {
+                Logger.getLogger(Simulation.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            System.out.println("***YELLOW DICES***");
-            rollsValues.forEach((k, v) -> System.out.println("Value: " + k + " Occurence: " + v));
-            rollsValues.clear();
         }
 
         if (ROLL_ORANGE) {
-            // Simulation for Orange Dices
-            for (int i = 0; i < NUBMER_OF_ITERATION; i++) {
-                value = dice.rollOrangeDices(NUMBER_OF_DICES, REROLL_BLANK, GREEDY_REROLL);
-                if (rollsValues.containsKey(value)) {
-                    tmp = rollsValues.get(value);
-                    tmp++;
-                    rollsValues.put(value, tmp);
-                } else {
-                    rollsValues.put(value, 1);
-                }
+            try {
+                // Simulation for Orange Dices
+                rollsValues = dice.diceRollSimulation("orange", NUMBER_OF_DICES, REROLL_BLANK, GREEDY_REROLL);
+                printScoreFromMap("ORANGE", rollsValues);
+            } catch (Exception ex) {
+                Logger.getLogger(Simulation.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            System.out.println("***ORANGE DICES***");
-            rollsValues.forEach((k, v) -> System.out.println("Value: " + k + " Occurence: " + v));
-            rollsValues.clear();
         }
 
         if (ROLL_RED) {
-            // Simulation for Red Dices
-            for (int i = 0; i < NUBMER_OF_ITERATION; i++) {
-                value = dice.rollRedDices(NUMBER_OF_DICES, REROLL_BLANK, GREEDY_REROLL);
-                if (rollsValues.containsKey(value)) {
-                    tmp = rollsValues.get(value);
-                    tmp++;
-                    rollsValues.put(value, tmp);
-                } else {
-                    rollsValues.put(value, 1);
-                }
+            try {
+                // Simulation for Red Dices
+                rollsValues = dice.diceRollSimulation("red", NUMBER_OF_DICES, REROLL_BLANK, GREEDY_REROLL);
+                printScoreFromMap("RED", rollsValues);
+            } catch (Exception ex) {
+                Logger.getLogger(Simulation.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            System.out.println("***RED DICES***");
-            rollsValues.forEach((k, v) -> System.out.println("Value: " + k + " Occurence: " + v));
-            rollsValues.clear();
         }
+    }
+
+    private static void printScoreFromMap(String diceType, HashMap<Integer, Integer> rollsValues) {
+        System.out.println("***" + diceType + " DICES***");
+        rollsValues.forEach((k, v) -> System.out.println("Value: " + k + " Occurence: " + v));
+        DecimalFormat df = new DecimalFormat("#.###");
+        System.out.println("Weighted average: " + df.format(Valuator.weightedAverage(rollsValues)));
+        rollsValues.clear();
     }
 }
